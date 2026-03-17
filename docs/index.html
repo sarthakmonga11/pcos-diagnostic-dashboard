@@ -18,10 +18,10 @@
           entrypoint: "Home.py", // Defines the main execution script
           files: {
             // Map the virtual WASM file system to the actual GitHub repository paths
-            "Home.py": { url: "./app/Home.py" },
-            "pages/1_Phenotype_Explorer.py": { url: "./app/pages/1_Phenotype_Explorer.py" },
-            "pages/2_Risk_Calculator.py": { url: "./app/pages/2_Risk_Calculator.py" },
-            "pages/3_Feature_Impact.py": { url: "./app/pages/3_Feature_Impact.py" }
+            "Home.py": { url: "../app/Home.py" },
+            "pages/1_Phenotype_Explorer.py": { url: "../app/pages/1_Phenotype_Explorer.py" },
+            "pages/2_Risk_Calculator.py": { url: "../app/pages/2_Risk_Calculator.py" },
+            "pages/3_Feature_Impact.py": { url: "../app/pages/3_Feature_Impact.py" }
           },
         },
         document.getElementById("root") // Target the div defined above

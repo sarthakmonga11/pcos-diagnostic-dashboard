@@ -44,7 +44,9 @@ def train_models():
     # Non-invasive model features (only clinical measurements, no blood tests or ultrasound)
     noninvasive_features = ['age_yrs', 'bmi', 'weight_kg', 'waist_hip_ratio', 
                            'pulse_ratebpm', 'rr_breaths_min', 'cycle_lengthdays',
-                           'bp_systolic_mmhg', 'bp_diastolic_mmhg']
+                           'bp_systolic_mmhg', 'bp_diastolic_mmhg', 'weight_gain_y_n',
+                           'hair_growth_y_n', 'skin_darkening_y_n', 'hair_loss_y_n',
+                           'pimples_y_n', 'fast_food_y_n', 'reg_exercise_y_n', 'pregnant_y_n']
     
     # Train full model
     X_full = df[full_features].fillna(df[full_features].mean())
@@ -126,6 +128,8 @@ with col2:
         - Body measurements (BMI, weight, waist-hip ratio)
         - Vital signs (pulse, respiration, blood pressure)
         - Menstrual history (cycle length)
+        - PCOS symptoms (hair growth, acne, skin darkening, etc.)
+        - Lifestyle factors (diet, exercise)
         - Best for: Screening without blood tests or ultrasound
         """)
 
@@ -180,12 +184,26 @@ with col3:
         fsh = st.number_input("FSH (mIU/ml)", min_value=1.0, max_value=20.0, value=6.0,
                              help="Follicle-Stimulating Hormone level")
     else:
-        # Non-invasive model doesn't need these
-        follicle_r = None
-        follicle_l = None
-        amh = None
-        lh = None
-        fsh = None
+        st.markdown("**PCOS-Related Symptoms & Lifestyle**")
+        weight_gain = st.checkbox("Weight Gain", value=False, help="Unexplained weight gain")
+        hair_growth = st.checkbox("Excessive Hair Growth (Hirsutism)", value=False, help="Abnormal body hair growth")
+        skin_darkening = st.checkbox("Skin Darkening (Acanthosis Nigricans)", value=False, help="Dark patches on skin")
+        hair_loss = st.checkbox("Hair Loss (Alopecia)", value=False, help="Hair thinning or loss")
+        pimples = st.checkbox("Acne/Pimples", value=False, help="Persistent acne")
+        fast_food = st.checkbox("High Fast Food Intake", value=False, help="Regular fast food consumption")
+        exercise = st.checkbox("Regular Exercise", value=False, help="Engages in regular physical activity")
+        pregnant = st.checkbox("Currently Pregnant", value=False, help="Pregnancy status")
+    
+    if selected_model == 'Full Model':
+        # Non-invasive variables not used
+        weight_gain = None
+        hair_growth = None
+        skin_darkening = None
+        hair_loss = None
+        pimples = None
+        fast_food = None
+        exercise = None
+        pregnant = None
 
 st.divider()
 
@@ -193,7 +211,10 @@ st.divider()
 if selected_model == 'Full Model':
     input_data = np.array([[age, bmi, follicle_r, follicle_l, amh, lh, fsh, weight, whr]])
 else:
-    input_data = np.array([[age, bmi, weight, whr, pulse, rr, cycle, bp_sys, bp_dia]])
+    # Convert checkboxes to 1/0 for binary variables
+    input_data = np.array([[age, bmi, weight, whr, pulse, rr, cycle, bp_sys, bp_dia,
+                           int(weight_gain), int(hair_growth), int(skin_darkening),
+                           int(hair_loss), int(pimples), int(fast_food), int(exercise), int(pregnant)]])
 
 input_scaled = model_info['scaler'].transform(input_data)
 
@@ -315,6 +336,30 @@ if selected_model == 'Full Model':
     
     if lh / (fsh + 0.1) > 2:
         recommendations.append("⚠️ **Elevated LH/FSH ratio**: Hormonal imbalance typical of PCOS (>3 highly suggestive)")
+else:
+    # Non-invasive model - symptom-based recommendations
+    symptom_count = int(weight_gain) + int(hair_growth) + int(skin_darkening) + int(hair_loss) + int(pimples)
+    
+    if weight_gain:
+        recommendations.append("⚠️ **Weight gain**: Suggests possible insulin resistance - core PCOS feature")
+    
+    if hair_growth:
+        recommendations.append("⚠️ **Hirsutism (excess hair growth)**: Sign of androgen excess typical of PCOS")
+    
+    if skin_darkening:
+        recommendations.append("⚠️ **Skin darkening**: May indicate insulin resistance (acanthosis nigricans)")
+    
+    if hair_loss:
+        recommendations.append("⚠️ **Hair loss**: Indicates elevated androgens - common PCOS symptom")
+    
+    if pimples:
+        recommendations.append("⚠️ **Acne/pimples**: Sign of hormonal imbalance")
+    
+    if symptom_count >= 3:
+        recommendations.append("🔴 **Multiple PCOS symptoms**: Strong indicator - clinical evaluation recommended")
+    
+    if not fast_food and exercise:
+        recommendations.append("✅ **Good lifestyle factors**: Maintaining regular exercise and healthy diet supports PCOS management")
 
 # Risk-based recommendations
 if risk_prob > 0.6:
@@ -329,17 +374,6 @@ elif risk_prob > 0.3:
         recommendations.append("🟡 **Moderate risk**: Additional testing recommended - consider bloodwork and pelvic ultrasound")
 else:
     recommendations.append("🟢 **Low risk**: Current indicators suggest low PCOS probability - routine monitoring suggested")
-
-for rec in recommendations:
-    st.markdown(f"- {rec}")
-
-if not recommendations:
-    st.info("No specific recommendations based on current values.")
-    recommendations.append("🔴 **High risk**: Recommend comprehensive PCOS evaluation by endocrinologist")
-elif risk_prob > 0.3:
-    recommendations.append("🟡 **Moderate risk**: Monitor for PCOS symptoms and hormonal markers")
-else:
-    recommendations.append("🟢 **Low risk**: Current indicators suggest low PCOS probability")
 
 for rec in recommendations:
     st.markdown(f"- {rec}")

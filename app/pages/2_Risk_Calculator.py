@@ -233,11 +233,11 @@ col1, col2 = st.columns(2)
 
 with col1:
     # Risk gauge
-    if risk_prob < 0.3:
+    if risk_prob < 0.25:
         risk_level = "🟢 Low Risk"
         color = "#00AA00"
-    elif risk_prob < 0.6:
-        risk_level = "🟡 Moderate Risk"
+    elif risk_prob < 0.75:
+        risk_level = "🟡 Medium Risk"
         color = "#FFAA00"
     else:
         risk_level = "🔴 High Risk"
@@ -251,25 +251,25 @@ with col2:
     fig, ax = plt.subplots(figsize=(8, 6))
     
     # Create colored gauge zones with proper mapping
-    # Low risk: 0-30% (green, angles 0 to 0.3π)
-    low_angles = np.linspace(0, 0.3 * np.pi, 30)
+    # Low risk: 0-25% (green, angles 0 to 0.25π)
+    low_angles = np.linspace(0, 0.25 * np.pi, 25)
     low_x = np.cos(low_angles)
     low_y = np.sin(low_angles)
-    ax.fill_between(low_x, 0, low_y, color='#00AA00', alpha=0.4, label='Low Risk (0-30%)')
+    ax.fill_between(low_x, 0, low_y, color='#00AA00', alpha=0.4, label='Low Risk (0-25%)')
     ax.plot(low_x, low_y, color='#00AA00', linewidth=3)
     
-    # Moderate risk: 30-60% (yellow, angles 0.3π to 0.6π)
-    mod_angles = np.linspace(0.3 * np.pi, 0.6 * np.pi, 30)
-    mod_x = np.cos(mod_angles)
-    mod_y = np.sin(mod_angles)
-    ax.fill_between(mod_x, 0, mod_y, color='#FFAA00', alpha=0.4, label='Moderate (30-60%)')
-    ax.plot(mod_x, mod_y, color='#FFAA00', linewidth=3)
+    # Medium risk: 25-75% (yellow, angles 0.25π to 0.75π)
+    med_angles = np.linspace(0.25 * np.pi, 0.75 * np.pi, 50)
+    med_x = np.cos(med_angles)
+    med_y = np.sin(med_angles)
+    ax.fill_between(med_x, 0, med_y, color='#FFAA00', alpha=0.4, label='Medium (25-75%)')
+    ax.plot(med_x, med_y, color='#FFAA00', linewidth=3)
     
-    # High risk: 60-100% (red, angles 0.6π to π)
-    high_angles = np.linspace(0.6 * np.pi, np.pi, 40)
+    # High risk: 75-100% (red, angles 0.75π to π)
+    high_angles = np.linspace(0.75 * np.pi, np.pi, 25)
     high_x = np.cos(high_angles)
     high_y = np.sin(high_angles)
-    ax.fill_between(high_x, 0, high_y, color='#FF0000', alpha=0.4, label='High Risk (60-100%)')
+    ax.fill_between(high_x, 0, high_y, color='#FF0000', alpha=0.4, label='High Risk (75-100%)')
     ax.plot(high_x, high_y, color='#FF0000', linewidth=3)
     
     # Needle indicator
@@ -285,9 +285,9 @@ with col2:
     ax.plot([-1, 1], [0, 0], 'k-', linewidth=2)
     
     # Labels
-    ax.text(-0.85, -0.15, '0%', ha='center', fontsize=10, fontweight='bold')
+    ax.text(-0.95, -0.15, '0%', ha='center', fontsize=10, fontweight='bold')
     ax.text(0, -0.15, '50%', ha='center', fontsize=10, fontweight='bold')
-    ax.text(0.85, -0.15, '100%', ha='center', fontsize=10, fontweight='bold')
+    ax.text(0.95, -0.15, '100%', ha='center', fontsize=10, fontweight='bold')
     
     ax.set_xlim(-1.3, 1.3)
     ax.set_ylim(-0.3, 1.2)
@@ -387,16 +387,16 @@ else:
         recommendations.append("✅ **Good lifestyle factors**: Maintaining regular exercise and healthy diet supports PCOS management")
 
 # Risk-based recommendations
-if risk_prob > 0.6:
+if risk_prob > 0.75:
     if selected_model == 'Full Model':
         recommendations.append("🔴 **High risk**: Recommend comprehensive PCOS evaluation by endocrinologist")
     else:
         recommendations.append("🔴 **High risk**: Non-invasive screening suggests PCOS - recommend clinical evaluation with blood tests & ultrasound")
-elif risk_prob > 0.3:
+elif risk_prob > 0.25:
     if selected_model == 'Full Model':
-        recommendations.append("🟡 **Moderate risk**: Monitor for PCOS symptoms and hormonal markers - consider repeat testing")
+        recommendations.append("🟡 **Medium risk**: Monitor for PCOS symptoms and hormonal markers - consider repeat testing")
     else:
-        recommendations.append("🟡 **Moderate risk**: Additional testing recommended - consider bloodwork and pelvic ultrasound")
+        recommendations.append("🟡 **Medium risk**: Additional testing recommended - consider bloodwork and pelvic ultrasound")
 else:
     recommendations.append("🟢 **Low risk**: Current indicators suggest low PCOS probability - routine monitoring suggested")
 

@@ -69,7 +69,18 @@ def load_and_analyze():
     
     return df, X, y, numerical_cols, feature_importance, model
 
-df, X, y, numerical_cols, feature_importance, model = load_and_analyze()
+try:
+    df, X, y, numerical_cols, feature_importance, model = load_and_analyze()
+except FileNotFoundError as e:
+    st.error("❌ Data Loading Error")
+    st.error("Could not find the required data file: `data/processed/cleaned_data.csv`")
+    st.info("Make sure the data file exists in the project directory and is committed to GitHub.")
+    st.stop()
+except Exception as e:
+    st.error("❌ Analysis Error")
+    st.error(f"Failed to perform feature impact analysis: {str(e)}")
+    st.info("Please verify that all dependencies are correctly installed and the data file is valid.")
+    st.stop()
 
 # Sidebar options
 st.sidebar.markdown("### Analysis Options")

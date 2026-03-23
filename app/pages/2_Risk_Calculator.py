@@ -53,7 +53,18 @@ def train_model():
     
     return model, scaler, feature_cols, df[feature_cols].describe()
 
-model, scaler, feature_cols, feature_stats = train_model()
+try:
+    model, scaler, feature_cols, feature_stats = train_model()
+except FileNotFoundError as e:
+    st.error("❌ Data Loading Error")
+    st.error(f"Could not find the required data file: `data/processed/cleaned_data.csv`")
+    st.info("Make sure the data file exists in the project directory and is committed to GitHub.")
+    st.stop()
+except Exception as e:
+    st.error("❌ Model Training Error")
+    st.error(f"Failed to train the risk assessment model: {str(e)}")
+    st.info("Please verify that all dependencies are correctly installed and the data file is valid.")
+    st.stop()
 
 st.markdown("""
 ### How to Use

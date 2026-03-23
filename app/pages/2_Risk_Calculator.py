@@ -250,25 +250,50 @@ with col2:
     # Risk gauge visualization
     fig, ax = plt.subplots(figsize=(8, 6))
     
-    # Create gauge
-    theta = np.linspace(0, np.pi, 100)
-    r = 1
+    # Create colored gauge zones with proper mapping
+    # Low risk: 0-30% (green, angles 0 to 0.3π)
+    low_angles = np.linspace(0, 0.3 * np.pi, 30)
+    low_x = np.cos(low_angles)
+    low_y = np.sin(low_angles)
+    ax.fill_between(low_x, 0, low_y, color='#00AA00', alpha=0.4, label='Low Risk (0-30%)')
+    ax.plot(low_x, low_y, color='#00AA00', linewidth=3)
     
-    # Background colors for risk zones
-    ax.fill_between(theta[0:34], 0, r, color='#00AA00', alpha=0.3, label='Low Risk (0-30%)')
-    ax.fill_between(theta[33:67], 0, r, color='#FFAA00', alpha=0.3, label='Moderate (30-60%)')
-    ax.fill_between(theta[66:100], 0, r, color='#FF0000', alpha=0.3, label='High Risk (60-100%)')
+    # Moderate risk: 30-60% (yellow, angles 0.3π to 0.6π)
+    mod_angles = np.linspace(0.3 * np.pi, 0.6 * np.pi, 30)
+    mod_x = np.cos(mod_angles)
+    mod_y = np.sin(mod_angles)
+    ax.fill_between(mod_x, 0, mod_y, color='#FFAA00', alpha=0.4, label='Moderate (30-60%)')
+    ax.plot(mod_x, mod_y, color='#FFAA00', linewidth=3)
     
-    # Needle
+    # High risk: 60-100% (red, angles 0.6π to π)
+    high_angles = np.linspace(0.6 * np.pi, np.pi, 40)
+    high_x = np.cos(high_angles)
+    high_y = np.sin(high_angles)
+    ax.fill_between(high_x, 0, high_y, color='#FF0000', alpha=0.4, label='High Risk (60-100%)')
+    ax.plot(high_x, high_y, color='#FF0000', linewidth=3)
+    
+    # Needle indicator
     needle_angle = risk_prob * np.pi
-    ax.arrow(0, 0, np.cos(needle_angle) * 0.9, np.sin(needle_angle) * 0.9,
-            head_width=0.1, head_length=0.1, fc='black', ec='black', linewidth=3)
+    ax.arrow(0, 0, np.cos(needle_angle) * 0.85, np.sin(needle_angle) * 0.85,
+            head_width=0.08, head_length=0.08, fc='black', ec='black', linewidth=3, zorder=10)
+    
+    # Center circle
+    circle = plt.Circle((0, 0), 0.08, color='black', zorder=11)
+    ax.add_patch(circle)
+    
+    # Baseline
+    ax.plot([-1, 1], [0, 0], 'k-', linewidth=2)
+    
+    # Labels
+    ax.text(-0.85, -0.15, '0%', ha='center', fontsize=10, fontweight='bold')
+    ax.text(0, -0.15, '50%', ha='center', fontsize=10, fontweight='bold')
+    ax.text(0.85, -0.15, '100%', ha='center', fontsize=10, fontweight='bold')
     
     ax.set_xlim(-1.3, 1.3)
-    ax.set_ylim(-0.2, 1.3)
+    ax.set_ylim(-0.3, 1.2)
     ax.set_aspect('equal')
     ax.axis('off')
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=3, fontsize=10)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, -0.05), ncol=3, fontsize=10, frameon=True)
     
     st.pyplot(fig)
 

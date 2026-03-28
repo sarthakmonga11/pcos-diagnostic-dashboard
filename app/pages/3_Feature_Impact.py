@@ -7,6 +7,7 @@ from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import mutual_info_classif
+from sklearn.pipeline import Pipeline
 from sklearn.model_selection import StratifiedKFold, cross_validate
 from sklearn.metrics import make_scorer, roc_auc_score, f1_score
 from xgboost import XGBClassifier
@@ -114,24 +115,34 @@ def run_model_comparison():
     for feature_set_name, features in [('Full (9 features)', full_features),
                                         ('Non-Invasive (17 features)', noninvasive_features)]:
         X = df[features].fillna(df[features].mean())
-        scaler = StandardScaler()
-        X_scaled = scaler.fit_transform(X)
 
-        logreg = LogisticRegression(random_state=42, max_iter=1000)
-        lr_cv = cross_validate(logreg, X_scaled, y, cv=cv, scoring=scorers)
+        # Pipeline ensures scaler is fitted only on training folds (no data leakage)
+        logreg_pipe = Pipeline([
+            ('scaler', StandardScaler()),
+            ('model', LogisticRegression(random_state=42, max_iter=1000))
+        ])
+        lr_cv = cross_validate(logreg_pipe, X, y, cv=cv, scoring=scorers)
 
-        xgb = XGBClassifier(
-            random_state=42,
-            scale_pos_weight=scale_pos_weight,
-            n_estimators=200,
-            max_depth=4,
-            learning_rate=0.1,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            eval_metric='logloss',
-            verbosity=0
-        )
-        xgb_cv = cross_validate(xgb, X_scaled, y, cv=cv, scoring=scorers)
+        # Tuned hyperparameters from notebook grid search (03-xgboost-shap.ipynb)
+        # XGBoost is tree-based — no scaling needed
+        xgb_pipe = Pipeline([
+            ('model', XGBClassifier(
+                random_state=42,
+                scale_pos_weight=scale_pos_weight,
+                n_estimators=100,
+                max_depth=7,
+                learning_rate=0.05,
+                subsample=0.6,
+                colsample_bytree=1.0,
+                min_child_weight=1,
+                gamma=0.1,
+                reg_alpha=0,
+                reg_lambda=2,
+                eval_metric='logloss',
+                verbosity=0
+            ))
+        ])
+        xgb_cv = cross_validate(xgb_pipe, X, y, cv=cv, scoring=scorers)
 
         for algo, cv_res in [('Logistic Regression', lr_cv), ('XGBoost', xgb_cv)]:
             results.append({

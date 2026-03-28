@@ -68,15 +68,19 @@ def train_models():
         logreg = LogisticRegression(random_state=42, max_iter=1000)
         logreg.fit(X_scaled, y)
 
+        # Tuned hyperparameters from notebook grid search (03-xgboost-shap.ipynb)
         xgb = XGBClassifier(
             random_state=42,
             scale_pos_weight=scale_pos_weight,
-            n_estimators=200,
-            max_depth=4,
-            learning_rate=0.1,
-            subsample=0.8,
-            colsample_bytree=0.8,
-            use_label_encoder=False,
+            n_estimators=100,
+            max_depth=7,
+            learning_rate=0.05,
+            subsample=0.6,
+            colsample_bytree=1.0,
+            min_child_weight=1,
+            gamma=0.1,
+            reg_alpha=0,
+            reg_lambda=2,
             eval_metric='logloss',
             verbosity=0
         )

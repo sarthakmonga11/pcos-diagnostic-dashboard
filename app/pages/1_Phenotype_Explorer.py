@@ -166,7 +166,7 @@ try:
             ax.grid(True, alpha=0.3, linestyle='--')
             ax.legend(loc='best', fontsize=10, framealpha=0.95)
             style_fig(fig, ax)
-            st.pyplot(fig, width="stretch")
+            st.pyplot(fig, use_container_width=True)
 
         with col2:
             st.markdown("### 📊 Population Distribution")
@@ -187,7 +187,7 @@ try:
 
             ax.set_title('PCOS Distribution', fontsize=12, fontweight='bold', pad=15)
             style_fig(fig, ax)
-            st.pyplot(fig, width="stretch")
+            st.pyplot(fig, use_container_width=True)
         
         # Phenotype characteristics cards
         st.divider()
@@ -260,7 +260,7 @@ try:
                        va='center', fontsize=9, fontweight='bold')
 
             style_fig(fig, ax)
-            st.pyplot(fig, width="stretch")
+            st.pyplot(fig, use_container_width=True)
         
         with col2:
             st.markdown("#### Statistical Significance")
@@ -322,7 +322,7 @@ try:
             ax.set_title(f'{selected_feature} Distribution Comparison', fontsize=13, fontweight='bold', pad=15)
             ax.grid(axis='y', alpha=0.3, linestyle='--')
             style_fig(fig, ax)
-            st.pyplot(fig, width="stretch")
+            st.pyplot(fig, use_container_width=True)
         
         with col1:
             col_stat1, col_stat2 = st.columns(2)
@@ -473,7 +473,7 @@ try:
                 ax.legend(fontsize=9)
                 ax.grid(True, alpha=0.3, linestyle='--')
                 style_fig(fig, ax)
-                st.pyplot(fig, width="stretch")
+                st.pyplot(fig, use_container_width=True)
 
 except Exception as e:
     st.error("❌ Error Loading Phenotype Data")

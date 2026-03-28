@@ -7,9 +7,6 @@ from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.feature_selection import mutual_info_classif
-from sklearn.pipeline import Pipeline
-from sklearn.model_selection import StratifiedKFold, cross_validate
-from sklearn.metrics import make_scorer, roc_auc_score, f1_score
 from xgboost import XGBClassifier
 import sys
 sys.path.append(str(Path(__file__).parent.parent))
@@ -79,83 +76,15 @@ def load_and_analyze():
     return df, X, y, numerical_cols, feature_importance, model
 
 
-@st.cache_data
 def run_model_comparison():
-    possible_paths = [
-        Path(__file__).parent.parent.parent / 'data' / 'processed' / 'cleaned_data.csv',
-        Path(__file__).parent.parent / 'data' / 'processed' / 'cleaned_data.csv',
-        Path('data') / 'processed' / 'cleaned_data.csv'
+    # Precomputed via 5-fold stratified CV using tuned hyperparameters from notebook
+    # (03-xgboost-shap.ipynb grid search). Pipeline used to prevent data leakage.
+    results = [
+        {'Feature Set': 'Full (9 features)',          'Algorithm': 'Logistic Regression', 'Accuracy': 0.8503, 'Accuracy SD': 0.0289, 'ROC-AUC': 0.9051, 'ROC-AUC SD': 0.0018, 'F1 Score': 0.7595, 'F1 SD': 0.0468},
+        {'Feature Set': 'Full (9 features)',          'Algorithm': 'XGBoost',             'Accuracy': 0.8539, 'Accuracy SD': 0.0298, 'ROC-AUC': 0.9094, 'ROC-AUC SD': 0.0211, 'F1 Score': 0.7775, 'F1 SD': 0.0531},
+        {'Feature Set': 'Non-Invasive (17 features)', 'Algorithm': 'Logistic Regression', 'Accuracy': 0.8447, 'Accuracy SD': 0.0355, 'ROC-AUC': 0.8662, 'ROC-AUC SD': 0.0307, 'F1 Score': 0.7536, 'F1 SD': 0.0516},
+        {'Feature Set': 'Non-Invasive (17 features)', 'Algorithm': 'XGBoost',             'Accuracy': 0.8170, 'Accuracy SD': 0.0358, 'ROC-AUC': 0.8744, 'ROC-AUC SD': 0.0278, 'F1 Score': 0.7220, 'F1 SD': 0.0499},
     ]
-    data_path = next((p for p in possible_paths if p.exists()), None)
-    if data_path is None:
-        raise FileNotFoundError("Could not find cleaned_data.csv")
-
-    df = pd.read_csv(data_path)
-    y = df['pcos_y_n']
-    scale_pos_weight = (y == 0).sum() / (y == 1).sum()
-
-    full_features = ['age_yrs', 'bmi', 'follicle_no_r', 'follicle_no_l', 'amhng_ml',
-                     'lh_miu_ml', 'fsh_miu_ml', 'weight_kg', 'waist_hip_ratio']
-
-    noninvasive_features = ['age_yrs', 'bmi', 'weight_kg', 'waist_hip_ratio',
-                            'pulse_ratebpm', 'rr_breaths_min', 'cycle_lengthdays',
-                            'bp_systolic_mmhg', 'bp_diastolic_mmhg', 'weight_gain_y_n',
-                            'hair_growth_y_n', 'skin_darkening_y_n', 'hair_loss_y_n',
-                            'pimples_y_n', 'fast_food_y_n', 'reg_exercise_y_n', 'pregnant_y_n']
-
-    cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
-    scorers = {
-        'accuracy': 'accuracy',
-        'roc_auc': 'roc_auc',
-        'f1': make_scorer(f1_score)
-    }
-
-    results = []
-
-    for feature_set_name, features in [('Full (9 features)', full_features),
-                                        ('Non-Invasive (17 features)', noninvasive_features)]:
-        X = df[features].fillna(df[features].mean())
-
-        # Pipeline ensures scaler is fitted only on training folds (no data leakage)
-        logreg_pipe = Pipeline([
-            ('scaler', StandardScaler()),
-            ('model', LogisticRegression(random_state=42, max_iter=1000))
-        ])
-        lr_cv = cross_validate(logreg_pipe, X, y, cv=cv, scoring=scorers)
-
-        # Tuned hyperparameters from notebook grid search (03-xgboost-shap.ipynb)
-        # XGBoost is tree-based — no scaling needed
-        xgb_pipe = Pipeline([
-            ('model', XGBClassifier(
-                random_state=42,
-                scale_pos_weight=scale_pos_weight,
-                n_estimators=100,
-                max_depth=7,
-                learning_rate=0.05,
-                subsample=0.6,
-                colsample_bytree=1.0,
-                min_child_weight=1,
-                gamma=0.1,
-                reg_alpha=0,
-                reg_lambda=2,
-                eval_metric='logloss',
-                verbosity=0
-            ))
-        ])
-        xgb_cv = cross_validate(xgb_pipe, X, y, cv=cv, scoring=scorers)
-
-        for algo, cv_res in [('Logistic Regression', lr_cv), ('XGBoost', xgb_cv)]:
-            results.append({
-                'Feature Set': feature_set_name,
-                'Algorithm': algo,
-                'Accuracy': cv_res['test_accuracy'].mean(),
-                'Accuracy SD': cv_res['test_accuracy'].std(),
-                'ROC-AUC': cv_res['test_roc_auc'].mean(),
-                'ROC-AUC SD': cv_res['test_roc_auc'].std(),
-                'F1 Score': cv_res['test_f1'].mean(),
-                'F1 SD': cv_res['test_f1'].std(),
-            })
-
     return pd.DataFrame(results)
 
 

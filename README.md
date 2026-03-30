@@ -99,6 +99,21 @@ The dashboard will open at `http://localhost:8501`
 4. **04-eda-classifier**: Classification model evaluation
 5. **05-clustering**: Patient phenotype clustering analysis
 
+## Model Performance
+
+5-fold stratified cross-validation results (mean ± std):
+
+| Feature Set | Algorithm | Accuracy | ROC-AUC | F1 Score |
+|---|---|---|---|---|
+| Full (9 features) | Logistic Regression | 0.850 ± 0.029 | 0.905 ± 0.002 | 0.760 ± 0.047 |
+| Full (9 features) | XGBoost | 0.854 ± 0.030 | 0.909 ± 0.021 | 0.778 ± 0.053 |
+| Non-Invasive (17 features) | Logistic Regression | 0.845 ± 0.036 | 0.866 ± 0.031 | 0.754 ± 0.052 |
+| Non-Invasive (17 features) | XGBoost | 0.817 ± 0.036 | 0.874 ± 0.028 | 0.722 ± 0.050 |
+
+- **Full model** uses clinical labs and ultrasound: age, BMI, weight, waist-hip ratio, follicle counts, AMH, LH, FSH
+- **Non-invasive model** uses only vitals, symptoms, and lifestyle factors — no blood tests or ultrasound required
+- XGBoost uses `scale_pos_weight` to handle the ~2:1 class imbalance (controls vs PCOS)
+
 ## License
 
 This project is for research and educational purposes.

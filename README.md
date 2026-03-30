@@ -60,25 +60,34 @@ The dashboard will open at `http://localhost:8501`
 ## Project Structure
 
 ```
-├── app/                    # Streamlit application
-│   ├── Home.py            # Main dashboard
-│   └── pages/             # Feature pages
+├── app/                        # Streamlit application
+│   ├── Home.py                 # Main dashboard
+│   ├── styles.py               # Shared styles and matplotlib theme
+│   └── pages/                  # Feature pages
 │       ├── 1_Phenotype_Explorer.py
 │       ├── 2_Risk_Calculator.py
 │       └── 3_Feature_Impact.py
-├── src/                   # Core utilities
-│   ├── preprocessing.py   # Data cleaning
-│   └── model_training.py  # ML models
+├── src/                        # Core utilities
+│   ├── init.py
+│   ├── preprocessing.py        # Data cleaning
+│   └── model_training.py       # ML models
 ├── data/
-│   ├── raw/              # Original PCOS datasets
-│   └── processed/        # Cleaned data (cleaned_data.csv)
-├── notebooks/            # Analysis notebooks
+│   ├── raw/                    # Original PCOS datasets
+│   └── processed/              # Cleaned data (cleaned_data.csv)
+├── notebooks/                  # Analysis notebooks
 │   ├── 01-data-cleaning.ipynb
 │   ├── 02-eda-pca.ipynb
 │   ├── 03-xgboost-shap.ipynb
 │   ├── 04-eda-classifier.ipynb
 │   └── 05-clustering.ipynb
-└── docs/                 # Documentation
+├── tests/
+│   └── test_dashboard.py       # Core logic tests
+├── docs/
+│   └── index.html              # Generated documentation
+├── generate_docs.py            # Documentation generator
+├── requirements.txt
+├── run_dashboard.sh
+└── run_dashboard.bat
 ```
 
 ## Data
@@ -98,21 +107,6 @@ The dashboard will open at `http://localhost:8501`
 3. **03-xgboost-shap**: XGBoost modeling with SHAP interpretability
 4. **04-eda-classifier**: Classification model evaluation
 5. **05-clustering**: Patient phenotype clustering analysis
-
-## Model Performance
-
-5-fold stratified cross-validation results (mean ± std):
-
-| Feature Set | Algorithm | Accuracy | ROC-AUC | F1 Score |
-|---|---|---|---|---|
-| Full (9 features) | Logistic Regression | 0.850 ± 0.029 | 0.905 ± 0.002 | 0.760 ± 0.047 |
-| Full (9 features) | XGBoost | 0.854 ± 0.030 | 0.909 ± 0.021 | 0.778 ± 0.053 |
-| Non-Invasive (17 features) | Logistic Regression | 0.845 ± 0.036 | 0.866 ± 0.031 | 0.754 ± 0.052 |
-| Non-Invasive (17 features) | XGBoost | 0.817 ± 0.036 | 0.874 ± 0.028 | 0.722 ± 0.050 |
-
-- **Full model** uses clinical labs and ultrasound: age, BMI, weight, waist-hip ratio, follicle counts, AMH, LH, FSH
-- **Non-invasive model** uses only vitals, symptoms, and lifestyle factors — no blood tests or ultrasound required
-- XGBoost uses `scale_pos_weight` to handle the ~2:1 class imbalance (controls vs PCOS)
 
 ## License
 

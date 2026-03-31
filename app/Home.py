@@ -102,6 +102,31 @@ with col2:
 
 st.divider()
 
+# --- Research Context ---
+st.markdown("### Research Context")
+
+ctx_col1, ctx_col2 = st.columns(2)
+
+with ctx_col1:
+    st.markdown("""
+    **Project:** Predicting and Subtyping Polycystic Ovary Syndrome: A Machine Learning Approach to Non-Invasive Screening and Phenotypic Clustering
+
+    **Course:** DATA 501 – University of Calgary, Winter 2026
+
+    **Team:** Austin Simmons · Naima Noor · Sarthak Monga
+    """)
+
+with ctx_col2:
+    st.markdown("""
+    **RQ1:** Which low-cost, non-invasive clinical indicators are the strongest predictors of PCOS in the absence of ultrasound and blood test data?
+
+    **RQ2:** What is the smallest set of variables that can reliably screen for PCOS while maintaining acceptable diagnostic performance?
+
+    **RQ3:** To what extent can cycle irregularity and cycle length predict a PCOS diagnosis?
+    """)
+
+st.divider()
+
 # --- Motivation & Background ---
 st.markdown("### Motivation & Background")
 
@@ -182,31 +207,6 @@ with kf_col3:
     K-Means clustering (k=2) on the PCOS-positive cohort revealed two biologically distinct
     subtypes consistent with Gao et al. (2025). Both phenotypes share similar follicle counts
     and cycle irregularity rates — the distinguishing signal is **metabolic vs. hormonal**.
-    """)
-
-st.divider()
-
-# --- Research Context ---
-st.markdown("### Research Context")
-
-ctx_col1, ctx_col2 = st.columns(2)
-
-with ctx_col1:
-    st.markdown("""
-    **Project:** Predicting and Subtyping Polycystic Ovary Syndrome: A Machine Learning Approach to Non-Invasive Screening and Phenotypic Clustering
-
-    **Course:** DATA 501 – University of Calgary, Winter 2026
-
-    **Team:** Austin Simmons · Naima Noor · Sarthak Monga
-    """)
-
-with ctx_col2:
-    st.markdown("""
-    **RQ1:** Which low-cost, non-invasive clinical indicators are the strongest predictors of PCOS in the absence of ultrasound and blood test data?
-
-    **RQ2:** What is the smallest set of variables that can reliably screen for PCOS while maintaining acceptable diagnostic performance?
-
-    **RQ3:** To what extent can cycle irregularity and cycle length predict a PCOS diagnosis?
     """)
 
 st.divider()

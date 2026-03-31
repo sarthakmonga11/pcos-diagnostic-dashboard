@@ -247,8 +247,10 @@ with guide_col3:
 
 st.divider()
 
-st.markdown("""
-**Data Source:** PCOS patient dataset (541 patients, 41 features) from a fertility clinic
-**Methods:** K-Means clustering, logistic regression, XGBoost (RandomizedSearchCV), SHAP analysis
-**Last Updated:** March 2026
-""")
+footer_col1, footer_col2 = st.columns(2)
+
+with footer_col1:
+    st.markdown("**Data Source**\n\nPCOS patient dataset (541 patients, 41 features) from a fertility clinic")
+
+with footer_col2:
+    st.markdown("**Methods**\n\nK-Means clustering, Logistic Regression, XGBoost (RandomizedSearchCV), SHAP analysis")

@@ -102,6 +102,90 @@ with col2:
 
 st.divider()
 
+# --- Motivation & Background ---
+st.markdown("### Motivation & Background")
+
+mot_col1, mot_col2 = st.columns(2)
+
+with mot_col1:
+    st.markdown("""
+    Polycystic Ovary Syndrome is the most common endocrine disorder affecting people of reproductive
+    age, yet the average time from symptom onset to diagnosis is **2–3 years** — with many patients
+    receiving incorrect or delayed diagnoses. The consequences extend well beyond reproductive health:
+    PCOS is associated with elevated risk of type 2 diabetes, cardiovascular disease, endometrial
+    cancer, and mental health conditions including anxiety and depression.
+
+    The clinical gold standard — the **Rotterdam Criteria** — requires at least two of three
+    conditions: oligo-ovulation, hyperandrogenism, and polycystic ovarian morphology on ultrasound.
+    Two of these three criteria require specialized equipment (ultrasound imaging and hormonal blood
+    panels) that are costly and unavailable in many lower-resource healthcare settings. This structural
+    barrier is a primary driver of underdiagnosis and motivates the search for accessible,
+    symptom-based screening approaches.
+    """)
+
+with mot_col2:
+    st.markdown("""
+    This project is directly informed by two recent publications:
+
+    **Agirsoy & Oehlschlaeger (2025)** demonstrated that meaningful predictive performance for PCOS
+    diagnosis can be achieved using feature subsets aligned with the Rotterdam diagnostic criteria,
+    supporting a feature-subset comparison approach and the use of XGBoost with SHAP interpretability.
+
+    **Gao et al. (2025)** applied data-driven subtyping methods to a large PCOS clinical cohort,
+    revealing biologically and clinically distinct subtypes across metabolic and hormonal dimensions.
+    This challenges the conventional treatment of PCOS as a homogeneous condition and motivated the
+    inclusion of unsupervised clustering alongside binary classification in this project.
+
+    Together, these lines of evidence support the hypothesis that machine learning applied to
+    low-cost clinical data can serve as a viable first-line screening tool, and that phenotypic
+    subtyping provides additional clinical value beyond a binary prediction.
+    """)
+
+st.divider()
+
+# --- Key Findings ---
+st.markdown("### Key Findings at a Glance")
+
+kf_col1, kf_col2, kf_col3 = st.columns(3)
+
+with kf_col1:
+    st.markdown("#### Model Performance")
+    st.metric("Full Clinical AUC-ROC (XGBoost)", "94.8%")
+    st.metric("Non-Invasive AUC-ROC (XGBoost)", "88.1%")
+    st.metric("Diagnostic Cost of Removing Labs", "~7 pp gap")
+    st.markdown("""
+    The ~7 percentage-point gap between full clinical and non-invasive conditions quantifies
+    the informational cost of removing ultrasound and blood test data — a relatively modest gap,
+    suggesting symptom-based screening carries substantial predictive signal.
+    """)
+
+with kf_col2:
+    st.markdown("#### Minimal Feature Set (SHAP)")
+    st.metric("Stable Features Identified", "10")
+    st.metric("Non-Invasive Among Them", "7 of 10")
+    st.markdown("""
+    SHAP stability analysis across 5 cross-validation folds identified a preliminary minimal
+    feature set. The most important non-invasive predictors were:
+    - Hair growth (hirsutism)
+    - Skin darkening
+    - Weight gain
+    - Cycle irregularity & cycle length
+    - Pimples / acne
+    """)
+
+with kf_col3:
+    st.markdown("#### Phenotypic Clustering")
+    st.metric("Phenotypes Identified", "2")
+    st.metric("Metabolic Subtype", "n = 59  |  BMI 29.1")
+    st.metric("Hyperandrogenic Subtype", "n = 118  |  BMI 23.7")
+    st.markdown("""
+    K-Means clustering (k=2) on the PCOS-positive cohort revealed two biologically distinct
+    subtypes consistent with Gao et al. (2025). Both phenotypes share similar follicle counts
+    and cycle irregularity rates — the distinguishing signal is **metabolic vs. hormonal**.
+    """)
+
+st.divider()
+
 # --- Research Context ---
 st.markdown("### Research Context")
 
@@ -109,8 +193,7 @@ ctx_col1, ctx_col2 = st.columns(2)
 
 with ctx_col1:
     st.markdown("""
-    **Project:** Predicting and Subtyping Polycystic Ovary Syndrome: A Machine Learning Approach
-    to Non-Invasive Screening and Phenotypic Clustering
+    **Project:** Predicting and Subtyping Polycystic Ovary Syndrome: A Machine Learning Approach to Non-Invasive Screening and Phenotypic Clustering
 
     **Course:** DATA 501 – University of Calgary, Winter 2026
 
@@ -119,12 +202,11 @@ with ctx_col1:
 
 with ctx_col2:
     st.markdown("""
-    **Research Questions:**
-    - **RQ1:** Which low-cost, non-invasive clinical indicators are the strongest predictors of PCOS
-    in the absence of ultrasound and blood test data?
-    - **RQ2:** What is the smallest set of variables that can reliably screen for PCOS while
-    maintaining acceptable diagnostic performance?
-    - **RQ3:** To what extent can cycle irregularity and cycle length predict a PCOS diagnosis?
+    **RQ1:** Which low-cost, non-invasive clinical indicators are the strongest predictors of PCOS in the absence of ultrasound and blood test data?
+
+    **RQ2:** What is the smallest set of variables that can reliably screen for PCOS while maintaining acceptable diagnostic performance?
+
+    **RQ3:** To what extent can cycle irregularity and cycle length predict a PCOS diagnosis?
     """)
 
 st.divider()
